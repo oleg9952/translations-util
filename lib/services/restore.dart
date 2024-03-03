@@ -1,14 +1,15 @@
 import 'dart:convert' show JsonEncoder;
 import 'dart:io' show Directory, File, Process;
 
+import 'package:translations/constants/interaction.dart' show Locales;
 import 'package:translations/constants/paths.dart'
     show restoreFolderPath, restoreInputFolderPath, restoreOutputFolderPath;
 import 'package:translations/services/interaction.dart' show interactionService;
 
 class Restore {
   // Methods ---------------------------------------------------------------------
-  void restoreJSONFromGoogleDoc() async {
-    final selectedLocale = interactionService.selectLocale();
+  void restoreJSONFromGoogleDoc(Locales? locale) async {
+    final selectedLocale = locale ?? interactionService.selectLocale();
 
     final keysFile = File('$restoreInputFolderPath/keys.txt');
     final valuesFile = File('$restoreInputFolderPath/values.txt');

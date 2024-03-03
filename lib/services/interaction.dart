@@ -34,6 +34,15 @@ class Interaction {
   bool confirmContinue() {
     return _continueConfirmation.interact();
   }
+
+  bool suggestToRestore(Locales selectedLocale) {
+    final suggestion = Confirm(
+      prompt:
+          '❌ No restored output file "${selectedLocale.name}-google.json" found. Do you want to restore?',
+      defaultValue: true,
+    );
+    return suggestion.interact();
+  }
 }
 
 final Interaction interactionService = Interaction();
