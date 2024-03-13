@@ -8,7 +8,8 @@ import 'package:translations/constants/paths.dart'
         differenceInputFolderPath,
         differenceOutputFolderPath,
         restoreOutputFolderPath;
-import 'package:translations/services/interaction.dart' show interactionService;
+import 'package:translations/services/interaction/interaction.dart'
+    show interactionService;
 import 'package:translations/services/restore.dart' show restoreService;
 
 class Difference {
@@ -32,8 +33,7 @@ class Difference {
     _createDiffInput(
         selectedLocale: selectedLocale, inputDiffLocalFile: inputDiffLocalFile);
 
-    await _openFileAndConfirmContinue(
-        file: inputDiffLocalFile, message: '${selectedLocale.name}-local.json');
+    await _openFileAndConfirmContinue(file: inputDiffLocalFile);
 
     _createDiffOutput(outputDiffFile);
 
@@ -87,13 +87,7 @@ class Difference {
     }
   }
 
-  Future<void> _openFileAndConfirmContinue(
-      {required File file, required String message}) async {
-    print('');
-    print('------- COPY TRANSLATIONS FROM PROJECT JSON -------');
-    print('ℹ️ Copy and paste your local translations to $message');
-    print('⏳ File opens in 5 seconds');
-    await Future.delayed(Duration(seconds: 5));
+  Future<void> _openFileAndConfirmContinue({required File file}) async {
     await Process.start('open', [file.path]);
     interactionService.confirmContinue();
   }
@@ -111,8 +105,21 @@ class Difference {
     final Map<String, dynamic> decodedGoogleDocData = jsonDecode(googleDocData);
     final Map<String, dynamic> decodedLocalData = jsonDecode(localData);
 
+    final diffOptions = interactionService.setDiffOptions();
+
     final Map<String, Map<String, String>> diffGoogleFromLocal = {};
     decodedGoogleDocData.forEach((key, value) {
+      if (diffOptions.shouldExcludeComas) {
+        final endsWithComma = value.endsWith(',');
+        if (endsWithComma) {
+          value = (value as String).substring(0, value.length - 1);
+        }
+      }
+
+      if (diffOptions.shouldTrim) {
+        value = value.trim();
+      }
+
       if (decodedLocalData[key] != value) {
         diffGoogleFromLocal[key] = {
           'google': value,
