@@ -4,7 +4,8 @@ import 'dart:io' show Directory, File, Process;
 import 'package:translations/constants/interaction.dart' show Locales;
 import 'package:translations/constants/paths.dart'
     show restoreFolderPath, restoreInputFolderPath, restoreOutputFolderPath;
-import 'package:translations/services/interaction.dart' show interactionService;
+import 'package:translations/services/interaction/interaction.dart'
+    show interactionService;
 
 class Restore {
   // Methods ---------------------------------------------------------------------
@@ -18,8 +19,8 @@ class Restore {
 
     _createRestoreInput(keysFile: keysFile, valuesFile: valuesFile);
 
-    await _openFileAndConfirmContinue(file: keysFile, message: 'keys');
-    await _openFileAndConfirmContinue(file: valuesFile, message: 'values');
+    await _openFileAndConfirmContinue(file: keysFile);
+    await _openFileAndConfirmContinue(file: valuesFile);
 
     _createRestoreOutput(outputFile);
 
@@ -62,13 +63,7 @@ class Restore {
     }
   }
 
-  Future<void> _openFileAndConfirmContinue(
-      {required File file, required String message}) async {
-    print('');
-    print('------- ${message.toUpperCase()} -------');
-    print('ℹ️ Enter translation $message in the txt file');
-    print('⏳ File opens in 5 seconds');
-    await Future.delayed(Duration(seconds: 5));
+  Future<void> _openFileAndConfirmContinue({required File file}) async {
     await Process.start('open', [file.path]);
     interactionService.confirmContinue();
   }

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io' show Directory;
 
 import 'package:translations/constants/paths.dart'
     show differenceFolderPath, restoreFolderPath;

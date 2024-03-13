@@ -21,3 +21,14 @@ final Map<int, String> localesMap = {
   Locales.en.index: 'English',
   Locales.ar.index: 'Arabic',
 };
+
+// DiffOptions --------------------------------------------
+enum DiffOptions {
+  excludeComas,
+  trim,
+}
+
+final Map<int, String> diffOptionsMap = {
+  DiffOptions.excludeComas.index: 'Exclude comas',
+  DiffOptions.trim.index: 'Trim',
+};

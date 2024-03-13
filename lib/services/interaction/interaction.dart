@@ -1,6 +1,7 @@
-import 'package:interact/interact.dart' show Confirm, Select;
+import 'package:interact/interact.dart' show Confirm, MultiSelect, Select;
 import 'package:translations/constants/interaction.dart'
-    show Locales, Modes, localesMap, modesMap;
+    show DiffOptions, Locales, Modes, diffOptionsMap, localesMap, modesMap;
+import 'package:translations/services/interaction/interaction.types.dart';
 
 class Interaction {
   final Select _modeSelection = Select(
@@ -18,6 +19,12 @@ class Interaction {
     prompt: 'Press enter to continue',
     defaultValue: true,
     waitForNewLine: true,
+  );
+
+  final _diffOptionsMultiSelect = MultiSelect(
+    prompt: 'Specify options for finding differences:',
+    options: diffOptionsMap.values.toList(),
+    defaults: [false, false],
   );
 
   // Methods ---------------------------------------------------------------
@@ -42,6 +49,16 @@ class Interaction {
       defaultValue: true,
     );
     return suggestion.interact();
+  }
+
+  SetDiffOptionsReturnType setDiffOptions() {
+    final selectedOptions = _diffOptionsMultiSelect.interact();
+    final shouldExcludeComas =
+        selectedOptions.contains(DiffOptions.excludeComas.index);
+    final shouldTrim = selectedOptions.contains(DiffOptions.trim.index);
+
+    return SetDiffOptionsReturnType(
+        shouldExcludeComas: shouldExcludeComas, shouldTrim: shouldTrim);
   }
 }
 
