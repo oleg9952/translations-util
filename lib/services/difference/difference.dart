@@ -1,16 +1,16 @@
 import 'dart:convert' show JsonEncoder, jsonDecode;
 import 'dart:io' show Directory, File, Process;
 
-import 'package:translations/constants/interaction.dart' show Locales;
-import 'package:translations/constants/paths.dart'
+import '../../constants/interaction.dart';
+import '../../constants/paths.dart'
     show
         differenceFolderPath,
         differenceInputFolderPath,
         differenceOutputFolderPath,
         restoreOutputFolderPath;
-import 'package:translations/services/interaction/interaction.dart'
-    show interactionService;
-import 'package:translations/services/restore.dart' show restoreService;
+import '../interaction/interaction.dart' show interactionService;
+import '../restore.dart' show restoreService;
+import 'difference.model.dart' show DifferencesResult, KeyDifferences;
 
 class Difference {
   void findDifferences() async {
@@ -30,8 +30,7 @@ class Difference {
     final outputDiffFile =
         File('$differenceOutputFolderPath/${selectedLocale.name}-diff.json');
 
-    _createDiffInput(
-        selectedLocale: selectedLocale, inputDiffLocalFile: inputDiffLocalFile);
+    _createDiffInput(inputDiffLocalFile);
 
     await _openFileAndConfirmContinue(file: inputDiffLocalFile);
 
@@ -61,8 +60,7 @@ class Difference {
     return hasGoogleDocInputFile;
   }
 
-  void _createDiffInput(
-      {required Locales selectedLocale, required File inputDiffLocalFile}) {
+  void _createDiffInput(File inputDiffLocalFile) {
     final differenceDir = Directory(differenceFolderPath);
     final differenceInputDir = Directory(differenceInputFolderPath);
 
@@ -107,7 +105,12 @@ class Difference {
 
     final diffOptions = interactionService.setDiffOptions();
 
-    final Map<String, Map<String, String>> diffGoogleFromLocal = {};
+    final diffGoogleFromLocal = DifferencesResult(
+      differences: {},
+      missingKeysInGoogleDoc: [],
+      missingKeysInLocalDoc: [],
+    );
+
     decodedGoogleDocData.forEach((key, value) {
       if (diffOptions.shouldExcludeComas) {
         final endsWithComma = value.endsWith(',');
@@ -120,11 +123,25 @@ class Difference {
         value = value.trim();
       }
 
-      if (decodedLocalData[key] != value) {
-        diffGoogleFromLocal[key] = {
-          'google': value,
-          '-local': decodedLocalData[key] ?? '',
-        };
+      if (decodedLocalData.containsKey(key) && decodedLocalData[key] != value) {
+        diffGoogleFromLocal.differences[key] = KeyDifferences(
+          google: value,
+          llocal: decodedLocalData[key] ?? '',
+        );
+      }
+    });
+
+    // Checking missing keys in google doc
+    decodedGoogleDocData.forEach((key, _) {
+      if (!decodedLocalData.containsKey(key)) {
+        diffGoogleFromLocal.missingKeysInLocalDoc.add(key);
+      }
+    });
+
+    // Checking missing keys in local doc
+    decodedLocalData.forEach((key, _) {
+      if (!decodedGoogleDocData.containsKey(key)) {
+        diffGoogleFromLocal.missingKeysInGoogleDoc.add(key);
       }
     });
 
@@ -132,7 +149,12 @@ class Difference {
         JsonEncoder.withIndent('  ').convert(diffGoogleFromLocal);
     outputDiffFile.writeAsStringSync(encodedDiffData);
 
-    print('😳 Found ${diffGoogleFromLocal.length} differences');
+    print('😳 Found:');
+    print('differences - ${diffGoogleFromLocal.differences.length}');
+    print(
+        'missing in google doc - ${diffGoogleFromLocal.missingKeysInGoogleDoc.length}');
+    print(
+        'missing in local doc - ${diffGoogleFromLocal.missingKeysInLocalDoc.length}');
   }
 }
 

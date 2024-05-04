@@ -1,7 +1,7 @@
 import 'package:interact/interact.dart' show Confirm, MultiSelect, Select;
 import 'package:translations/constants/interaction.dart'
     show DiffOptions, Locales, Modes, diffOptionsMap, localesMap, modesMap;
-import 'package:translations/services/interaction/interaction.types.dart';
+import 'package:translations/services/interaction/interaction.model.dart';
 
 class Interaction {
   final Select _modeSelection = Select(
