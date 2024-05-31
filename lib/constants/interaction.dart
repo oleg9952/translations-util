@@ -2,12 +2,14 @@
 enum Modes {
   restore,
   diff,
+  duplicates,
   reset,
 }
 
 final Map<int, String> modesMap = {
   Modes.restore.index: 'Restore JSON from Google Doc',
   Modes.diff.index: 'Find differences between local json and google doc json',
+  Modes.duplicates.index: 'Find duplicated values',
   Modes.reset.index: 'Reset all files'
 };
 
