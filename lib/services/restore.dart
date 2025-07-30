@@ -80,7 +80,12 @@ class Restore {
     final values = valuesFile.readAsLinesSync();
 
     final data = keys.asMap().map((index, key) {
-      return MapEntry(key, values[index]);
+      try {
+        return MapEntry(key, values[index]);
+      } catch (e) {
+        print('🚨🚨🚨 issue with line "$index" for key "$key" 🚨🚨🚨');
+        return MapEntry(key, '');
+      }
     });
 
     final encodedData = JsonEncoder.withIndent('  ').convert(data);

@@ -1,14 +1,21 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "dart",
-            "request": "launch",
-            "type": "dart",
-            "program": "bin/translations.dart",
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Dart Console App (Terminal)",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/translations.dart", // <-- Make sure this points to your main entry file
+      "console": "terminal" // <-- THIS IS THE KEY SETTING
+    },
+    {
+      "name": "dart",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/translations.dart"
+    }
+  ]
 }
